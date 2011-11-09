@@ -6,6 +6,7 @@
  */
 
 #include "OrderedCollection.h"
+#include <iostream>
 
 OrderedCollection::OrderedCollection() {
 	firstIndex_ = 2;
@@ -45,8 +46,15 @@ OrderedCollection & OrderedCollection::operator =(const OrderedCollection& rhs){
 	return *this;
 }
 
+int & OrderedCollection::operator[](int index){
+	if (index < 0 || index + firstIndex_ > lastIndex_) {
+		std::cout << "Index of out bounds" << std::endl;
+	}
+	return array_[index + firstIndex_];
+}
+
 bool OrderedCollection::isEmpty(){
-	return (size == 0);
+	return (size_ == 0);
 }
 
 int OrderedCollection::size(){

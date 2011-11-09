@@ -15,6 +15,8 @@ public:
 	virtual ~OrderedCollection();
 
 	OrderedCollection& operator=(const OrderedCollection&);
+	int& operator[](int);
+
 	bool isEmpty();
 	int size();
 	int basicSize();

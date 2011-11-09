@@ -15,6 +15,32 @@ OrderedCollection::OrderedCollection() {
 	array = new int[8];
 }
 
+OrderedCollection::OrderedCollection(const OrderedCollection& oc) {
+	firstIndex = oc.firstIndex;
+	lastIndex = oc.lastIndex;
+	size = oc.size;
+	basicSize = oc.basicSize;
+	array = new int[basicSize];
+	for (int var = 0; var < basicSize; ++var) {
+		array[var] = oc.array[var];
+	}
+}
+
 OrderedCollection::~OrderedCollection() {
-	// TODO Auto-generated destructor stub
+	delete[] array;
+}
+
+OrderedCollection & OrderedCollection::operator =(const OrderedCollection& rhs){
+	if(this != &rhs){
+		firstIndex = rhs.firstIndex;
+		lastIndex = rhs.lastIndex;
+		size = rhs.size;
+		basicSize = rhs.basicSize;
+		delete[] array;
+		array = new int[basicSize];
+		for (int var = 0; var < basicSize; ++var) {
+			array[var] = rhs.array[var];
+		}
+	}
+	return *this;
 }

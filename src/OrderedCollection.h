@@ -14,6 +14,8 @@ public:
 	OrderedCollection(const OrderedCollection&);
 	virtual ~OrderedCollection();
 
+	OrderedCollection& operator=(const OrderedCollection&);
+
 protected:
 	int firstIndex;
 	int lastIndex;

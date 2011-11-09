@@ -8,39 +8,51 @@
 #include "OrderedCollection.h"
 
 OrderedCollection::OrderedCollection() {
-	firstIndex = 2;
-	lastIndex = 2;
-	size = 0;
-	basicSize = 8;
-	array = new int[8];
+	firstIndex_ = 2;
+	lastIndex_ = 2;
+	size_ = 0;
+	basicSize_ = 8;
+	array_ = new int[8];
 }
 
 OrderedCollection::OrderedCollection(const OrderedCollection& oc) {
-	firstIndex = oc.firstIndex;
-	lastIndex = oc.lastIndex;
-	size = oc.size;
-	basicSize = oc.basicSize;
-	array = new int[basicSize];
-	for (int var = 0; var < basicSize; ++var) {
-		array[var] = oc.array[var];
+	firstIndex_ = oc.firstIndex_;
+	lastIndex_ = oc.lastIndex_;
+	size_ = oc.size_;
+	basicSize_ = oc.basicSize_;
+	array_ = new int[basicSize_];
+	for (int var = 0; var < basicSize_; ++var) {
+		array_[var] = oc.array_[var];
 	}
 }
 
 OrderedCollection::~OrderedCollection() {
-	delete[] array;
+	delete[] array_;
 }
 
 OrderedCollection & OrderedCollection::operator =(const OrderedCollection& rhs){
 	if(this != &rhs){
-		firstIndex = rhs.firstIndex;
-		lastIndex = rhs.lastIndex;
-		size = rhs.size;
-		basicSize = rhs.basicSize;
-		delete[] array;
-		array = new int[basicSize];
-		for (int var = 0; var < basicSize; ++var) {
-			array[var] = rhs.array[var];
+		firstIndex_ = rhs.firstIndex_;
+		lastIndex_ = rhs.lastIndex_;
+		size_ = rhs.size_;
+		basicSize_ = rhs.basicSize_;
+		delete[] array_;
+		array_ = new int[basicSize_];
+		for (int var = 0; var < basicSize_; ++var) {
+			array_[var] = rhs.array_[var];
 		}
 	}
 	return *this;
+}
+
+bool OrderedCollection::isEmpty(){
+	return (size == 0);
+}
+
+int OrderedCollection::size(){
+	return size_;
+}
+
+int OrderedCollection::basicSize(){
+	return basicSize_;
 }

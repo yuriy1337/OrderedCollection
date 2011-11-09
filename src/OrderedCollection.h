@@ -15,13 +15,16 @@ public:
 	virtual ~OrderedCollection();
 
 	OrderedCollection& operator=(const OrderedCollection&);
+	bool isEmpty();
+	int size();
+	int basicSize();
 
 protected:
-	int firstIndex;
-	int lastIndex;
-	int size;
-	int basicSize;
-	int * array;
+	int firstIndex_;
+	int lastIndex_;
+	int size_;
+	int basicSize_;
+	int * array_;
 };
 
 #endif /* ORDEREDCOLLECTION_H_ */

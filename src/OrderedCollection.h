@@ -21,12 +21,17 @@ public:
 	int size();
 	int basicSize();
 
+	OrderedCollection& insertAt(int,int);
+
 protected:
 	int firstIndex_;
 	int lastIndex_;
 	int size_;
 	int basicSize_;
 	int * array_;
+
+private:
+	bool shift(int dir, int index);
 };
 
 #endif /* ORDEREDCOLLECTION_H_ */

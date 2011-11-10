@@ -18,6 +18,8 @@ public:
 	SortedCollection(const SortedCollection&);
 	virtual ~SortedCollection();
 
+	OrderedCollection& insertAt(int,int);
+	OrderedCollection& insert(int);
 
 private:
 	void quickSort(int, int);

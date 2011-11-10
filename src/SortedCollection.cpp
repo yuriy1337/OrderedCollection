@@ -37,17 +37,19 @@ SortedCollection::~SortedCollection() {
 	delete[] array_;
 }
 
-OrderedCollection& OrderedCollection::insertAt(int,int){
+OrderedCollection& SortedCollection::insertAt(int,int){
 	std::cout << "Cannot InsertAt for an OrderedCollection" << std::endl;
+	return *this;
 }
 
-OrderedCollection& OrderedCollection::insert(int x){
+OrderedCollection& SortedCollection::insert(int x){
 	for (int var = firstIndex_; var <= basicSize_; ++var) {
 		if(array_[var] > x){
 			((OrderedCollection*)this)->insertAt(var- 1 - firstIndex_,x);
 			break;
 		}
 	}
+	return *this;
 }
 
 void SortedCollection::quickSort(int left, int right) {

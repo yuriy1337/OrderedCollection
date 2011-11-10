@@ -96,7 +96,7 @@ int OrderedCollection::basicSize(){
 }
 
 OrderedCollection& OrderedCollection::insertAt(int i, int x){
-	if (i < 0 || i + firstIndex_ > basicSize_) {
+	if (i < 1 || i + firstIndex_ >= lastIndex_) {
 		std::cout << "Index of out bounds" << std::endl;
 		return *this;
 	}
@@ -139,13 +139,13 @@ OrderedCollection& OrderedCollection::insert(int x){
 int OrderedCollection::find(int x){
 	for (int var = firstIndex_; var < lastIndex_; ++var) {
 		if(array_[var] == x)
-			return var;
+			return var - firstIndex_ + 1;
 	}
 	return 0;
 }
 
 OrderedCollection& OrderedCollection::removeAt(int i){
-	if (i < 0 || i + firstIndex_ > lastIndex_) {
+	if (i < 1 || i + firstIndex_ >= lastIndex_) {
 		std::cout << "Index of out bounds" << std::endl;
 		return *this;
 	}
@@ -158,7 +158,7 @@ OrderedCollection& OrderedCollection::removeAt(int i){
 }
 
 OrderedCollection& OrderedCollection::doFunc(int (*fn)(int)){
-	for (int var = firstIndex_; var < lastIndex_; ++var) {
+	for (int var = firstIndex_; var <= lastIndex_; ++var) {
 		fn(var);
 	}
 	return *this;

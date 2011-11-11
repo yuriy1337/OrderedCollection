@@ -28,6 +28,7 @@ public:
 	OrderedCollection& removeAt(int);
 	OrderedCollection& doFunc(int(*fn)(int));	//do is a key word, used for looping
 
+	void print();
 
 protected:
 	int firstIndex_;
@@ -42,6 +43,7 @@ protected:
 
 private:
 	bool shift(int dir, int index);
+
 };
 
 #endif /* ORDEREDCOLLECTION_H_ */

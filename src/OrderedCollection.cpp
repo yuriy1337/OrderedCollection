@@ -9,6 +9,7 @@
 #include <iostream>
 #include <time.h>
 
+const static int zero = 0;
 /*
  * Constructors
  */
@@ -77,10 +78,10 @@ OrderedCollection & OrderedCollection::operator =(const OrderedCollection& rhs){
 int & OrderedCollection::operator[](int index){
 	if (index < 0 || index + firstIndex_ > lastIndex_) {
 		std::cout << "Index of out bounds" << std::endl;
-		int *null = NULL;
-		return *null;	//wtf
 	}
-	return array_[index + firstIndex_];
+	else{
+		return array_[index + firstIndex_];
+	}
 }
 
 bool OrderedCollection::isEmpty(){
@@ -96,32 +97,49 @@ int OrderedCollection::basicSize(){
 }
 
 OrderedCollection& OrderedCollection::insertAt(int i, int x){
-	if (i < 1 || i + firstIndex_ >= lastIndex_) {
+	if (i < 1 || i + firstIndex_ > lastIndex_ + 1) {
 		std::cout << "Index of out bounds" << std::endl;
 		return *this;
 	}
-	if(array_[i] == 0){
-		array_[i] = x;
+	i--; /*
+			to correct for the offset, since OrderedCollection
+			starts at 1 instead of 0;
+	 */
+
+	if(array_[firstIndex_ + i] == 0 && firstIndex_ + size_ != basicSize_){
+		array_[firstIndex_ + i] = x;
 		lastIndex_++;
 	}
 	else{
-		bool shifted = false;
-		if(i < basicSize_/2)
-			shifted = makeRoomAtFirst(i);
-		else
-			shifted = makeRoomAtLast(i);
-		if(shifted){
-			array_[i] = x;
-			lastIndex_++;
+		if(firstIndex_ + i - 1 >= 0 && array_[firstIndex_ + i - 1] == 0){
+			array_[firstIndex_ + i - 1] = x;
+			firstIndex_--;
 		}
 		else{
-			grow();
+			bool shifted = false;
 			if(i < basicSize_/2)
 				shifted = makeRoomAtFirst(i);
 			else
 				shifted = makeRoomAtLast(i);
 			if(shifted){
-				array_[i] = x;
+				array_[firstIndex_ + i] = x;
+				lastIndex_++;
+			}
+			else{
+				grow();
+				if(array_[firstIndex_ + i] == 0 && firstIndex_ + size_ != basicSize_){
+					array_[firstIndex_ + i] = x;
+					lastIndex_++;
+				}
+				else{
+					if(i < basicSize_/2)
+						shifted = makeRoomAtFirst(i);
+					else
+						shifted = makeRoomAtLast(i);
+					if(shifted){
+						array_[firstIndex_ + i] = x;
+					}
+				}
 			}
 		}
 	}
@@ -137,7 +155,7 @@ OrderedCollection& OrderedCollection::insert(int x){
 }
 
 int OrderedCollection::find(int x){
-	for (int var = firstIndex_; var < lastIndex_; ++var) {
+	for (int var = firstIndex_; var < lastIndex_ + 1; ++var) {
 		if(array_[var] == x)
 			return var - firstIndex_ + 1;
 	}
@@ -145,7 +163,7 @@ int OrderedCollection::find(int x){
 }
 
 OrderedCollection& OrderedCollection::removeAt(int i){
-	if (i < 1 || i + firstIndex_ >= lastIndex_) {
+	if (i < 1 || i + firstIndex_ > lastIndex_ + 1) {
 		std::cout << "Index of out bounds" << std::endl;
 		return *this;
 	}
@@ -159,7 +177,7 @@ OrderedCollection& OrderedCollection::removeAt(int i){
 
 OrderedCollection& OrderedCollection::doFunc(int (*fn)(int)){
 	for (int var = firstIndex_; var <= lastIndex_; ++var) {
-		fn(var);
+		array_[var] = fn(array_[var]);
 	}
 	return *this;
 }
@@ -168,9 +186,9 @@ OrderedCollection& OrderedCollection::doFunc(int (*fn)(int)){
  * Protected Functions
  */
 
-bool OrderedCollection::makeRoomAtFirst(int index){
+bool OrderedCollection::makeRoomAtLast(int index){
 	if(array_[0] == 0){
-		for (int var = 1; var + firstIndex_ <= basicSize_; ++var) {
+		for (int var = firstIndex_; var < basicSize_; ++var) {
 			array_[var - 1] = array_[var];
 		}
 	}
@@ -181,8 +199,8 @@ bool OrderedCollection::makeRoomAtFirst(int index){
 	return true;
 }
 
-bool OrderedCollection::makeRoomAtLast(int index){
-	if(array_[0] == 0){
+bool OrderedCollection::makeRoomAtFirst(int index){
+	if(array_[basicSize_ - 1] == 0 && firstIndex_ + size_ != basicSize_ ){
 		for (int var = basicSize_ - 1; var >= index + firstIndex_; --var) {
 			array_[var + 1] = array_[var];
 		}
@@ -198,7 +216,7 @@ void OrderedCollection::grow(){
 	int * new_arr = new int[basicSize_ * 2];
 	int counter = 0;
 	int new_start = (basicSize_ * 2)/4;
-	for (int var = firstIndex_; var <= lastIndex_; ++var) {
+	for (int var = firstIndex_; var < lastIndex_; ++var) {
 		new_arr[new_start + counter] = array_[var];
 		counter++;
 	}
@@ -206,6 +224,7 @@ void OrderedCollection::grow(){
 	array_ = new_arr;
 	firstIndex_ =  new_start;
 	lastIndex_ = firstIndex_ + size_;
+	basicSize_ = basicSize_ * 2;
 	/*
 	 * Just because
 	 * (づ｡◕‿‿◕｡)づ
@@ -240,5 +259,12 @@ bool OrderedCollection::shift(int dir, int index){
 	return true;
 }
 
+void OrderedCollection::print(){
+	std::cout << "[";
+	for (int var = 0; var < basicSize_; ++var) {
+		std::cout << array_[var] << " ";
+	}
+	std::cout << "]" << std::endl;
+}
 
 

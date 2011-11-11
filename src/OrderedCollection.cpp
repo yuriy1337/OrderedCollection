@@ -123,7 +123,6 @@ OrderedCollection& OrderedCollection::insertAt(int i, int x){
 				shifted = makeRoomAtLast(i);
 			if(shifted){
 				array_[firstIndex_ + i] = x;
-				lastIndex_++;
 			}
 			else{
 				grow();

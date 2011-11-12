@@ -76,11 +76,11 @@ OrderedCollection & OrderedCollection::operator =(const OrderedCollection& rhs){
  * public functions
  */
 int & OrderedCollection::operator[](int index){
-	if (index < 0 || index + firstIndex_ > lastIndex_) {
+	if (index < 1 || index + firstIndex_ > lastIndex_) {
 		std::cout << "Index of out bounds" << std::endl;
 	}
 	else{
-		return array_[index + firstIndex_];
+		return array_[index + firstIndex_ - 1];
 	}
 }
 
@@ -117,26 +117,59 @@ OrderedCollection& OrderedCollection::insertAt(int i, int x){
 		}
 		else{
 			bool shifted = false;
-			if(i < basicSize_/2)
-				shifted = makeRoomAtFirst(i);
-			else
-				shifted = makeRoomAtLast(i);
+			if(i < basicSize_/2){
+				shifted = shift(-1,1,i);
+				if(shifted){
+					firstIndex_--;
+					lastIndex_--;
+				}
+			}
+			if(!shifted && firstIndex_ > i){
+				shifted = shift(1,i,size_);
+				if(shifted){
+					firstIndex_++;
+					lastIndex_++;
+				}
+			}
+			if(!shifted){
+				if(firstIndex_ > i){
+					shifted = makeRoomAtFirst();
+				}
+				else{
+					if(basicSize_ - size_ >= lastIndex_ - i)
+						shifted = makeRoomAtLast();
+				}
+			}
 			if(shifted){
 				array_[firstIndex_ + i] = x;
+				lastIndex_++;
 			}
 			else{
 				grow();
+				if(firstIndex_ + i - 1 >= 0 && array_[firstIndex_ + i - 1] == 0){
+					array_[firstIndex_ + i - 1] = x;
+					firstIndex_--;
+				}
+				else
 				if(array_[firstIndex_ + i] == 0 && firstIndex_ + size_ != basicSize_){
 					array_[firstIndex_ + i] = x;
 					lastIndex_++;
 				}
 				else{
-					if(i < basicSize_/2)
-						shifted = makeRoomAtFirst(i);
-					else
-						shifted = makeRoomAtLast(i);
+					if(i < basicSize_/2){
+						shifted = shift(-1,1,i);
+						firstIndex_--;
+						lastIndex_--;
+					}
+					else{
+						shifted = shift(1,i,size_);
+						firstIndex_++;
+						lastIndex_++;
+					}
+					}
 					if(shifted){
 						array_[firstIndex_ + i] = x;
+						lastIndex_++;
 					}
 				}
 			}
@@ -148,8 +181,9 @@ OrderedCollection& OrderedCollection::insertAt(int i, int x){
 
 OrderedCollection& OrderedCollection::insert(int x){
 	srand ( time(NULL) );
-
-	int pos = rand() % size_ + firstIndex_;
+	int pos = 1;
+	if(size_ != 0)
+		pos = (rand() % size_) + 1;
 	return insertAt(pos, x);
 }
 
@@ -166,16 +200,31 @@ OrderedCollection& OrderedCollection::removeAt(int i){
 		std::cout << "Index of out bounds" << std::endl;
 		return *this;
 	}
+	i--;	//adjust for smalltalk-like arrays starting with one
 	array_[firstIndex_ + i] = 0;
-	if(i < basicSize_/2)
-		shift(1,i);
-	else
-		shift(-1,i);
+	if(i == 0){
+		firstIndex_++;
+	}
+	else{
+		if(i == size_ - 1){
+			lastIndex_--;
+		}else{
+		if(i < size_/2){
+			shift(1,1,i);
+			firstIndex_++;
+		}
+		else{
+			shift(-1,i,size_);
+			lastIndex_--;
+		}
+		}
+	}
+	size_--;
 	return *this;
 }
 
 OrderedCollection& OrderedCollection::doFunc(int (*fn)(int)){
-	for (int var = firstIndex_; var <= lastIndex_; ++var) {
+	for (int var = firstIndex_; var < lastIndex_; ++var) {
 		array_[var] = fn(array_[var]);
 	}
 	return *this;
@@ -185,29 +234,44 @@ OrderedCollection& OrderedCollection::doFunc(int (*fn)(int)){
  * Protected Functions
  */
 
-bool OrderedCollection::makeRoomAtLast(int index){
-	if(array_[0] == 0){
-		for (int var = firstIndex_; var < basicSize_; ++var) {
-			array_[var - 1] = array_[var];
+bool OrderedCollection::makeRoomAtFirst(){
+	if(array_[basicSize_ - 1] == 0){
+		int count = 0;
+		while(array_[basicSize_ - 1] == 0){
+			for (int var = basicSize_ -1; var >= 0; --var) {
+				if(var!= 0)
+					array_[var] = array_[var - 1];
+				else
+					array_[var] = 0;
+			}
+			count++;
+			firstIndex_++;
+			lastIndex_++;
 		}
+
 	}
 	else{
 		return false;
 	}
-	firstIndex_--;
+
 	return true;
 }
 
-bool OrderedCollection::makeRoomAtFirst(int index){
-	if(array_[basicSize_ - 1] == 0 && firstIndex_ + size_ != basicSize_ ){
-		for (int var = basicSize_ - 1; var >= index + firstIndex_; --var) {
-			array_[var + 1] = array_[var];
+bool OrderedCollection::makeRoomAtLast(){
+	if(array_[0] == 0){
+		int count = 0;
+		while(array_[0] == 0){
+			for (int var = 0; var < basicSize_; ++var) {
+				array_[var] = array_[var + 1];
+			}
+			count++;
+			firstIndex_--;
+			lastIndex_--;
 		}
 	}
 	else{
 		return false;
 	}
-	lastIndex_++;
 	return true;
 }
 
@@ -233,10 +297,10 @@ void OrderedCollection::grow(){
 /*
  * Private Functions
  */
-bool OrderedCollection::shift(int dir, int index){
+bool OrderedCollection::shift(int dir, int start, int end){
 	if(dir == -1){	//left
 		if(array_[0] == 0){
-			for (int var = 1; var + firstIndex_ <= basicSize_; ++var) {
+			for (int var = firstIndex_ + start - 1; var <= firstIndex_ + end; ++var) {
 				array_[var - 1] = array_[var];
 			}
 		}
@@ -246,8 +310,8 @@ bool OrderedCollection::shift(int dir, int index){
 	}
 	else
 	if(dir == 1){	//right
-		if(array_[0] == 0){
-			for (int var = basicSize_ - 1; var >= index + firstIndex_; --var) {
+		if(firstIndex_+end != basicSize_ && array_[firstIndex_+end] == 0){
+			for (int var = firstIndex_ + end - 1; var >= 0 + start; --var) {
 				array_[var + 1] = array_[var];
 			}
 		}
@@ -259,11 +323,21 @@ bool OrderedCollection::shift(int dir, int index){
 }
 
 void OrderedCollection::print(){
+	std::cout << " " << std::endl;
+	std::cout << " " << std::endl;
 	std::cout << "[";
 	for (int var = 0; var < basicSize_; ++var) {
-		std::cout << array_[var] << " ";
+		std::cout << array_[var] << "\t";
 	}
+	std::cout << "]";
+	std::cout << std::endl;
+	std::cout << "[";
+		for (int var = 0; var < basicSize_; ++var) {
+			std::cout << var << "\t";
+		}
 	std::cout << "]" << std::endl;
+	std::cout << " " << std::endl;
+	std::cout << " " << std::endl;
 }
 
 

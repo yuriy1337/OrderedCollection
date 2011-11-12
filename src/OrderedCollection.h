@@ -18,12 +18,12 @@ public:
 	OrderedCollection& operator=(const OrderedCollection&);
 	int& operator[](int);
 
-	bool isEmpty();
-	int size();
-	int basicSize();
-	int find(int);
+	bool isEmpty();		//tests passed
+	int size();		//tests passed
+	int basicSize();		//tests passed
+	int find(int);		//tests passed
 
-	OrderedCollection& insertAt(int,int);
+	OrderedCollection& insertAt(int,int);	//tests passed
 	OrderedCollection& insert(int);
 	OrderedCollection& removeAt(int);
 	OrderedCollection& doFunc(int(*fn)(int));	//do is a key word, used for looping
@@ -37,12 +37,12 @@ protected:
 	int basicSize_;
 	int * array_;
 
-	bool makeRoomAtFirst(int);
-	bool makeRoomAtLast(int);
-	void grow();
+	bool makeRoomAtFirst();		//tests passed
+	bool makeRoomAtLast();		//tests passed
+	void grow();		//tests passed
 
 private:
-	bool shift(int dir, int index);
+	bool shift(int dir, int start, int end);
 
 };
 

@@ -13,6 +13,7 @@
 SortedCollection::SortedCollection()
 : OrderedCollection()
 {
+	std::cout << "in constructor for SortedCollection" << std::endl;
 }
 
 SortedCollection::SortedCollection(int x)
@@ -23,6 +24,7 @@ SortedCollection::SortedCollection(int x)
 SortedCollection::SortedCollection(const OrderedCollection& oc)
 : OrderedCollection(oc)
 {
+	quickSort(firstIndex_,firstIndex_+size_);
 }
 
 SortedCollection::SortedCollection(const SortedCollection& sc)
@@ -37,19 +39,29 @@ SortedCollection::~SortedCollection() {
 	delete[] array_;
 }
 
-OrderedCollection& SortedCollection::insertAt(int,int){
+SortedCollection& SortedCollection::insertAt(int,int){
 	std::cout << "Cannot InsertAt for an OrderedCollection" << std::endl;
 	return *this;
 }
 
-OrderedCollection& SortedCollection::insert(int x){
-	for (int var = firstIndex_; var <= basicSize_; ++var) {
-		if(array_[var] > x){
-			((OrderedCollection*)this)->insertAt(var- 1 - firstIndex_,x);
-			break;
+SortedCollection& SortedCollection::insert(int x){
+	if(size_ > 0){
+		for (int var = firstIndex_; var <= basicSize_; ++var) {
+			if(array_[var] > x){
+				((OrderedCollection*)this)->insertAt(var - firstIndex_ + 1,x);
+				break;
+			}
 		}
 	}
+	else{
+		((OrderedCollection*)this)->insertAt(1,x);
+	}
 	return *this;
+}
+
+SortedCollection& SortedCollection::doFunc(int(*fn)(int)){
+	((OrderedCollection*)this)->doFunc(fn);
+	quickSort(firstIndex_,firstIndex_+size_);
 }
 
 void SortedCollection::quickSort(int left, int right) {
